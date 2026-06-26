@@ -12,6 +12,9 @@ final class KeyButton: UIControl {
     // Light-mode key shadow
     private let shadowLayer = CALayer()
 
+    // Reusable haptic generator — create once, use many times
+    private static let haptics = UIImpactFeedbackGenerator(style: .light)
+
     init(keyDef: KeyDef, isSpecial: Bool = false,
          script: KeyboardLayout.Script = .english) {
         self.keyDef    = keyDef
@@ -140,16 +143,27 @@ final class KeyButton: UIControl {
         }
     }
 
-    // MARK: - Press animation (matches iOS press-down feel)
+    // MARK: - Touch handling
 
     @objc private func touchDown() {
-        UIView.animate(withDuration: 0.05) {
-            self.alpha = 0.6
+        Self.haptics.prepare()
+        Self.haptics.impactOccurred()
+        // Play subtle click sound
+        if #available(iOS 17.0, *) {
+            let id: UIImpressionFeedbackStyle = isSpecial ? .soft : .click
+            let impression = UIImpressionFeedbackGenerator(style: id)
+            impression.prepare()
+            impression.impressionOccurred()
+        }
+        UIView.animate(withDuration: 0.03) {
+            self.transform = CGAffineTransform(scaleX: 0.92, y: 0.92)
+            self.alpha = 0.4
         }
     }
 
     @objc private func touchUp() {
-        UIView.animate(withDuration: 0.1) {
+        UIView.animate(withDuration: 0.06, delay: 0, options: .allowUserInteraction) {
+            self.transform = .identity
             self.alpha = 1.0
         }
     }
@@ -195,9 +209,6 @@ final class KeyButton: UIControl {
     // MARK: - Tap
 
     @objc private func handleTap() {
-        let g = UIImpactFeedbackGenerator(style: .light)
-        g.prepare()
-        g.impactOccurred()
         onTap?()
     }
 }

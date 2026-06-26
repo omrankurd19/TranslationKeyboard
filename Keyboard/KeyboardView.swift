@@ -107,7 +107,7 @@ final class KeyboardView: UIView {
             case .on:         shiftState = .capsLocked
             case .capsLocked: shiftState = .off
             }
-            render()
+            updateShiftButton()
 
         case .keyboardMode:
             if page == .letters {
@@ -133,13 +133,26 @@ final class KeyboardView: UIView {
             render()
 
         case .character:
-            // Auto-shift off after one character
-            if shiftState == .on { shiftState = .off; render() }
+            if shiftState == .on {
+                shiftState = .off
+                updateShiftButton()
+            }
 
         default:
             break
         }
 
         onKey?(def)
+    }
+
+    private func updateShiftButton() {
+        // Update shift button visuals without full rebuild
+        for row in rowStacks {
+            for case let btn as KeyButton in row.arrangedSubviews {
+                if case .shift = btn.keyDef.kind {
+                    btn.setShiftActive(shiftState == .capsLocked)
+                }
+            }
+        }
     }
 }
