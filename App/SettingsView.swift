@@ -13,7 +13,7 @@ struct SettingsView: View {
         NavigationView {
             Form {
                 Section(header: Text("Gemini API Key")) {
-                    SecureField("AIzaSy…", text: $apiKey)
+                    SecureField("AIzaSy… or AQ.…", text: $apiKey)
                         .autocapitalization(.none)
                         .disableAutocorrection(true)
                     Button("Save Key") { saveKey() }
@@ -48,6 +48,23 @@ struct SettingsView: View {
                     }
                 }
 
+                Section(header: Text("Diagnostics")) {
+                    HStack {
+                        Text("Shared storage")
+                        Spacer()
+                        Text(settings.isAppGroupAvailable ? "OK ✓" : "NOT LINKED ✗")
+                            .foregroundColor(settings.isAppGroupAvailable ? .green : .red)
+                    }
+                    HStack {
+                        Text("Key stored")
+                        Spacer()
+                        Text((KeychainStore.loadAPIKey()?.isEmpty == false) ? "Yes ✓" : "No ✗")
+                            .foregroundColor((KeychainStore.loadAPIKey()?.isEmpty == false) ? .green : .red)
+                    }
+                    Text("Both must be green for the keyboard to read your key.")
+                        .font(.caption).foregroundColor(.secondary)
+                }
+
                 Section(header: Text("How to use")) {
                     Text("1. Save your API key above.\n2. Settings > General > Keyboard > Add New Keyboard > Translate.\n3. Enable Allow Full Access.\n4. Type, pick a language, press Translate.")
                         .font(.caption).foregroundColor(.secondary)
@@ -65,7 +82,10 @@ struct SettingsView: View {
     }
 
     private func saveKey() {
-        status = KeychainStore.saveAPIKey(apiKey) ? "v Key saved" : "Could not save key"
+        let ok = KeychainStore.saveAPIKey(apiKey)
+        // Force write to disk immediately
+        UserDefaults(suiteName: SharedConstants.appGroupID)?.synchronize()
+        status = ok ? "v Key saved" : "Could not save key"
     }
 
     private func testKey() {

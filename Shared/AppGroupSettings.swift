@@ -7,6 +7,11 @@ final class AppGroupSettings {
         self.defaults = UserDefaults(suiteName: SharedConstants.appGroupID) ?? .standard
     }
 
+    /// True when the shared App Group container is actually available.
+    var isAppGroupAvailable: Bool {
+        UserDefaults(suiteName: SharedConstants.appGroupID) != nil
+    }
+
     var defaultTargetLanguage: Language {
         get {
             let code = defaults.string(forKey: SharedConstants.defaultLanguageKey) ?? "ar"

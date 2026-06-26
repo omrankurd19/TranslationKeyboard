@@ -21,7 +21,7 @@
             <key>RequestsOpenAccess</key><true/>
         </dict>
         <key>NSExtensionPointIdentifier</key>
-        <string>com.apple.product-type.keyboard-extension</string>
+        <string>com.apple.keyboard-service</string>
         <key>NSExtensionPrincipalClass</key>
         <string>$(PRODUCT_MODULE_NAME).KeyboardViewController</string>
     </dict>
