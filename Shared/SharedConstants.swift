@@ -7,5 +7,5 @@ enum SharedConstants {
     static let defaultLanguageKey      = "default_language_code"
     static let lastTargetLanguageKey   = "last_target_language_code"
     static let modelIDKey              = "model_id"
-    static let defaultModelID          = "gemini-3.5-flash"
+    static let defaultModelID          = "gemini-2.5-flash"
 }

@@ -116,7 +116,15 @@ final class KeyButton: UIControl {
     }
 
     @objc private func handleTap() {
-        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+        // Haptics require Allow Full Access in keyboard extensions; guard silently.
+        if UIApplication.shared.isProtectedDataAvailable {
+            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+        } else {
+            // Attempt anyway — works when full access is granted, silently skipped if not.
+            let generator = UIImpactFeedbackGenerator(style: .light)
+            generator.prepare()
+            generator.impactOccurred()
+        }
         onTap?()
     }
 }

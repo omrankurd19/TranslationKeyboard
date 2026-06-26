@@ -43,10 +43,10 @@ enum KeyboardLayout {
             KeyDef(kind: .backspace, width: 1.5)
         ]
         let row4: [KeyDef] = [
-            KeyDef(kind: .keyboardMode, width: 1.5),
-            KeyDef(kind: .emoji,        width: 1),
-            KeyDef(kind: .space,        width: 5),
-            KeyDef(kind: .return,       width: 1.5)
+            KeyDef(kind: .keyboardMode,   width: 1.5),
+            KeyDef(kind: .switchKeyboard, width: 1),
+            KeyDef(kind: .space,          width: 5),
+            KeyDef(kind: .return,         width: 1.5)
         ]
         return [row1, row2, row3, row4]
     }
@@ -64,10 +64,10 @@ enum KeyboardLayout {
             KeyDef(kind: .backspace, width: 1.5)
         ]
         let row4: [KeyDef] = [
-            KeyDef(kind: .keyboardMode, width: 1.5),
-            KeyDef(kind: .emoji,        width: 1),
-            KeyDef(kind: .space,        width: 5),
-            KeyDef(kind: .return,       width: 1.5)
+            KeyDef(kind: .keyboardMode,   width: 1.5),
+            KeyDef(kind: .switchKeyboard, width: 1),
+            KeyDef(kind: .space,          width: 5),
+            KeyDef(kind: .return,         width: 1.5)
         ]
         return [row1, row2, row3, row4]
     }
@@ -89,10 +89,10 @@ enum KeyboardLayout {
             KeyDef(kind: .backspace, width: 1.5)
         ]
         let row4: [KeyDef] = [
-            KeyDef(kind: .keyboardMode, width: 1.5),
-            KeyDef(kind: .emoji,        width: 1),
-            KeyDef(kind: .space,        width: 5),
-            KeyDef(kind: .return,       width: 1.5)
+            KeyDef(kind: .keyboardMode,   width: 1.5),
+            KeyDef(kind: .switchKeyboard, width: 1),
+            KeyDef(kind: .space,          width: 5),
+            KeyDef(kind: .return,         width: 1.5)
         ]
         return [row1, row2, row3, row4]
     }
