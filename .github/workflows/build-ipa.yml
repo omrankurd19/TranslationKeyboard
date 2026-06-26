@@ -1,53 +1,78 @@
-name: TranslationKeyboard
-options:
-  bundleIdPrefix: com.translk
-  xcodeVersion: "16.4"
-  deploymentTarget:
-    iOS: "15.0"
-  createIntermediateGroups: true
+name: Build IPA
 
-settings:
-  base:
-    SWIFT_VERSION: "5.10"
-    DEVELOPMENT_TEAM: ""
-    CODE_SIGN_IDENTITY: ""
-    CODE_SIGNING_REQUIRED: "NO"
-    CODE_SIGNING_ALLOWED: "NO"
-    CODE_SIGN_ENTITLEMENTS: ""
-    IPHONEOS_DEPLOYMENT_TARGET: "15.0"
-    TARGETED_DEVICE_FAMILY: "1,2"
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
 
-targets:
-  TranslationKeyboard:
-    type: application
-    platform: iOS
-    sources:
-      - path: App
-        excludes:
-          - "*.entitlements"
-      - path: Shared
-        excludes:
-          - "*.entitlements"
-    settings:
-      base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.translk.app
-        INFOPLIST_FILE: App/Info.plist
-        ENABLE_BITCODE: "NO"
-        CODE_SIGN_ENTITLEMENTS: App/TranslationKeyboard.entitlements
-    dependencies:
-      - target: TranslationKeyboardExtension
+jobs:
+  build:
+    runs-on: macos-15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
-  TranslationKeyboardExtension:
-    type: app-extension
-    platform: iOS
-    sources:
-      - path: Keyboard
-        excludes:
-          - "*.entitlements"
-      - path: Shared
-    settings:
-      base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.translk.app.keyboard
-        INFOPLIST_FILE: Keyboard/Info.plist
-        ENABLE_BITCODE: "NO"
-        CODE_SIGN_ENTITLEMENTS: Keyboard/KeyboardExtension.entitlements
+      - name: Select Xcode 16.4
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '16.4.0'
+
+      - name: Install XcodeGen + ldid
+        run: brew install xcodegen ldid
+
+      - name: Generate Xcode project
+        run: xcodegen generate
+
+      - name: Build unsigned app
+        run: |
+          set -e
+          mkdir -p build
+          xcodebuild build \
+            -project TranslationKeyboard.xcodeproj \
+            -scheme TranslationKeyboard \
+            -configuration Release \
+            -sdk iphoneos \
+            -derivedDataPath build/DerivedData \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGN_ENTITLEMENTS="" \
+            DEVELOPMENT_TEAM="" \
+            PROVISIONING_PROFILE_SPECIFIER="" \
+            ONLY_ACTIVE_ARCH=NO
+
+      - name: Embed App Group entitlements with ldid (fake-sign)
+        run: |
+          set -e
+          APP=$(find build/DerivedData -name "TranslationKeyboard.app" -path "*Release-iphoneos*" | head -1)
+          echo "App at: $APP"
+          APPEX="$APP/PlugIns/TranslationKeyboardExtension.appex"
+
+          # Fake-sign the extension binary WITH the app group entitlement
+          echo "--- Signing extension ---"
+          ldid -S./entitlements.plist "$APPEX/TranslationKeyboardExtension"
+
+          # Fake-sign the main app binary WITH the app group entitlement
+          echo "--- Signing main app ---"
+          ldid -S./entitlements.plist "$APP/TranslationKeyboard"
+
+          echo "--- Verify extension entitlements ---"
+          ldid -e "$APPEX/TranslationKeyboardExtension"
+          echo "--- Verify app entitlements ---"
+          ldid -e "$APP/TranslationKeyboard"
+
+      - name: Package IPA
+        run: |
+          set -e
+          APP=$(find build/DerivedData -name "TranslationKeyboard.app" -path "*Release-iphoneos*" | head -1)
+          mkdir -p Payload
+          cp -R "$APP" Payload/
+          zip -rq TranslationKeyboard.ipa Payload
+          ls -lh TranslationKeyboard.ipa
+
+      - name: Upload IPA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: TranslationKeyboard.ipa
+          path: TranslationKeyboard.ipa
+          retention-days: 90
