@@ -1,7 +1,8 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yonaskolb/XcodeGen/master/Sources/ProjectSpec/xcodegen-spec.json
 name: TranslationKeyboard
 options:
   bundleIdPrefix: com.translk
-  xcodeVersion: "16.0"
+  xcodeVersion: "16.4"
   deploymentTarget:
     iOS: "15.0"
   createIntermediateGroups: true
