@@ -1,0 +1,42 @@
+name: TranslationKeyboard
+options:
+  bundleIdPrefix: com.translk
+  deploymentTarget:
+    iOS: "16.0"
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    DEVELOPMENT_TEAM: ""
+    CODE_SIGN_IDENTITY: ""
+    CODE_SIGNING_REQUIRED: "NO"
+    CODE_SIGNING_ALLOWED: "NO"
+    IPHONEOS_DEPLOYMENT_TARGET: "16.0"
+targets:
+  TranslationKeyboard:
+    type: application
+    platform: iOS
+    sources:
+      - path: App
+      - path: Shared
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.translk.app
+        INFOPLIST_FILE: App/Info.plist
+        ENABLE_BITCODE: "NO"
+    entitlements:
+      path: App/TranslationKeyboard.entitlements
+    dependencies:
+      - target: TranslationKeyboardExtension
+  TranslationKeyboardExtension:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: Keyboard
+      - path: Shared
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.translk.app.keyboard
+        INFOPLIST_FILE: Keyboard/Info.plist
+        ENABLE_BITCODE: "NO"
+    entitlements:
+      path: Keyboard/KeyboardExtension.entitlements
