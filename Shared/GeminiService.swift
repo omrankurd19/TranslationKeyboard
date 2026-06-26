@@ -28,14 +28,14 @@ final class GeminiService {
         self.session = session
     }
 
+    /// Translate `text` into `targetLanguage`, using dialect-aware prompting.
     func translate(text: String,
-                   targetLanguageName: String,
+                   targetLanguage: Language,
                    completion: @escaping (Result<String, Error>) -> Void) {
         guard !apiKey.isEmpty else {
             deliver(completion, .failure(GeminiError.noAPIKey)); return
         }
-        let prompt = TranslationPrompt.userPrompt(text: text,
-                                                  targetLanguageName: targetLanguageName)
+        let prompt = TranslationPrompt.userPrompt(text: text, targetLanguage: targetLanguage)
         let urlStr = "https://generativelanguage.googleapis.com/v1beta/models/\(modelID):generateContent?key=\(apiKey)"
         guard let url = URL(string: urlStr) else {
             deliver(completion, .failure(GeminiError.badResponse("invalid url"))); return
@@ -73,7 +73,9 @@ final class GeminiService {
               let parts = content["parts"] as? [[String: Any]],
               let textPart = parts.first,
               var text = textPart["text"] as? String else {
-            if let fb = (try? JSONSerialization.jsonObject(with: data ?? Data()) as? [String: Any])?["promptFeedback"] as? [String: Any],
+            if let fb = (try? JSONSerialization.jsonObject(
+                            with: data ?? Data()) as? [String: Any])?["promptFeedback"]
+                            as? [String: Any],
                let reason = fb["blockReason"] as? String {
                 deliver(completion, .failure(GeminiError.badResponse("blocked: \(reason)"))); return
             }

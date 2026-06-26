@@ -5,7 +5,7 @@ final class LanguagePickerView: UIView {
     var onSelect: ((Language) -> Void)?
     var onClose:  (() -> Void)?
 
-    private var filtered: [Language] = Languages.all
+    private var filtered: [Language] = [Languages.autoDetect] + Languages.all
     private let tableView   = UITableView(frame: .zero, style: .plain)
     private let searchField = UITextField()
 
@@ -75,8 +75,9 @@ final class LanguagePickerView: UIView {
 
     @objc private func searchChanged() {
         let q = searchField.text ?? ""
-        filtered = q.isEmpty ? Languages.all
-            : Languages.all.filter { $0.name.lowercased().contains(q.lowercased()) }
+        let all = [Languages.autoDetect] + Languages.all
+        filtered = q.isEmpty ? all
+            : all.filter { $0.name.lowercased().contains(q.lowercased()) }
         tableView.reloadData()
     }
 }

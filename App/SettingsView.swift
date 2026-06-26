@@ -91,7 +91,8 @@ struct SettingsView: View {
     private func testKey() {
         isTesting = true; status = "Testing..."
         GeminiService(modelID: modelID, apiKey: apiKey)
-            .translate(text: "hello", targetLanguageName: "Spanish") { result in
+            .translate(text: "hello",
+                       targetLanguage: Language(code: "es", name: "Spanish")) { result in
                 isTesting = false
                 switch result {
                 case .success(let out): status = "v Works! 'hello' = \(out)"

@@ -114,7 +114,7 @@ final class KeyboardViewController: UIInputViewController {
             return
         }
         toolbar.setTranslateState(.translating)
-        gemini.translate(text: text, targetLanguageName: targetLanguage.name) { [weak self] result in
+        gemini.translate(text: text, targetLanguage: targetLanguage) { [weak self] result in
             guard let self = self else { return }
             switch result {
             case .success(let translated):

@@ -9,6 +9,10 @@ enum Languages {
     static let autoDetect = Language(code: "auto", name: "Auto-detect")
 
     static let all: [Language] = [
+        // Kurdish dialects — top of list for easy access
+        Language(code: "ku-bad", name: "Kurdish (Badini)"),
+        Language(code: "ku-ckb", name: "Kurdish (Sorani)"),
+        Language(code: "ku",     name: "Kurdish (Kurmanji)"),
         Language(code: "ar",    name: "Arabic"),
         Language(code: "bn",    name: "Bengali"),
         Language(code: "bg",    name: "Bulgarian"),
