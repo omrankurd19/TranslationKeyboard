@@ -4,7 +4,7 @@ import Foundation
 /// We use UserDefaults (not Keychain) because TrollStore-signed apps don't
 /// have a proper team signing identity, so Keychain access groups don't work.
 /// On a jailbroken personal device this is acceptable.
-enum APIKeyStore {
+enum KeychainStore {
 
     private static var defaults: UserDefaults {
         UserDefaults(suiteName: SharedConstants.appGroupID) ?? .standard
@@ -27,6 +27,3 @@ enum APIKeyStore {
         return true
     }
 }
-
-// Backward-compatible typealias so existing call sites don't need changes yet.
-typealias KeychainStore = APIKeyStore
