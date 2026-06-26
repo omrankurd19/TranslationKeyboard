@@ -148,13 +148,6 @@ final class KeyButton: UIControl {
     @objc private func touchDown() {
         Self.haptics.prepare()
         Self.haptics.impactOccurred()
-        // Play subtle click sound
-        if #available(iOS 17.0, *) {
-            let id: UIImpressionFeedbackStyle = isSpecial ? .soft : .click
-            let impression = UIImpressionFeedbackGenerator(style: id)
-            impression.prepare()
-            impression.impressionOccurred()
-        }
         UIView.animate(withDuration: 0.03) {
             self.transform = CGAffineTransform(scaleX: 0.92, y: 0.92)
             self.alpha = 0.4
