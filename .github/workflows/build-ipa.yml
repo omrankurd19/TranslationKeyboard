@@ -20,7 +20,6 @@ jobs:
 
       - name: Generate Xcode project
         run: xcodegen generate
-        working-directory: TranslationKeyboard
 
       - name: Build unsigned app
         run: |
@@ -34,21 +33,19 @@ jobs:
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGN_IDENTITY="" | xcpretty || true
-        working-directory: TranslationKeyboard
 
       - name: Package IPA
         run: |
           APP=$(find build/DerivedData -name "TranslationKeyboard.app" -path "*Release-iphoneos*" | head -1)
-          echo "App: $APP"
+          echo "App found at: $APP"
           mkdir -p Payload
           cp -R "$APP" Payload/
           zip -rq TranslationKeyboard.ipa Payload
           ls -lh TranslationKeyboard.ipa
-        working-directory: TranslationKeyboard
 
       - name: Upload IPA artifact
         uses: actions/upload-artifact@v4
         with:
           name: TranslationKeyboard.ipa
-          path: TranslationKeyboard/TranslationKeyboard.ipa
+          path: TranslationKeyboard.ipa
           retention-days: 90
