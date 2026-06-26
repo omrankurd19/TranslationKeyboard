@@ -1,11 +1,11 @@
 import SwiftUI
 
 struct SettingsView: View {
-    @State private var apiKey     = ""
-    @State private var modelID    = SharedConstants.defaultModelID
+    @State private var apiKey        = ""
+    @State private var selectedModel = SharedConstants.defaultModelID
     @State private var defaultLang: Language = Languages.all.first!
-    @State private var status     = ""
-    @State private var isTesting  = false
+    @State private var status        = ""
+    @State private var isTesting     = false
 
     private let settings = AppGroupSettings()
 
@@ -29,13 +29,13 @@ struct SettingsView: View {
                     .onChange(of: defaultLang) { settings.defaultTargetLanguage = $0 }
                 }
 
-                Section(header: Text("Model")) {
-                    TextField("Model ID", text: $modelID)
-                        .autocapitalization(.none)
-                        .disableAutocorrection(true)
-                        .onChange(of: modelID) { settings.modelID = $0 }
-                    Text("Default: \(SharedConstants.defaultModelID). Free tier supported.")
-                        .font(.caption).foregroundColor(.secondary)
+                Section(header: Text("Model"), footer: Text("Free tier supported on all models.").font(.caption)) {
+                    Picker("Model", selection: $selectedModel) {
+                        ForEach(SharedConstants.availableModels, id: \.id) { model in
+                            Text(model.name).tag(model.id)
+                        }
+                    }
+                    .onChange(of: selectedModel) { settings.modelID = $0 }
                 }
 
                 Section {
@@ -76,9 +76,9 @@ struct SettingsView: View {
     }
 
     private func load() {
-        apiKey      = KeychainStore.loadAPIKey() ?? ""
-        modelID     = settings.modelID
-        defaultLang = settings.defaultTargetLanguage
+        apiKey         = KeychainStore.loadAPIKey() ?? ""
+        selectedModel  = settings.modelID
+        defaultLang    = settings.defaultTargetLanguage
     }
 
     private func saveKey() {
@@ -90,7 +90,7 @@ struct SettingsView: View {
 
     private func testKey() {
         isTesting = true; status = "Testing..."
-        GeminiService(modelID: modelID, apiKey: apiKey)
+        GeminiService(modelID: selectedModel, apiKey: apiKey)
             .translate(text: "hello",
                        targetLanguage: Language(code: "es", name: "Spanish")) { result in
                 isTesting = false
